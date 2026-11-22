@@ -41,7 +41,7 @@ button:disabled{opacity:.65;cursor:wait}
   }
 
   status.textContent = "Your bank response is ready to hand off.";
-  detail.textContent = "Select the button below. If your browser asks, allow Loopback access so this page can send the response to the agent running on this computer. The one-time code is not saved by this page.";
+  detail.textContent = "Select the button below. If your browser asks, allow Loopback access so this page can send the response to the agent running on this computer. Keep this tab open until the agent confirms receipt. The one-time code is not saved by this page.";
   button.hidden = false;
 
   button.addEventListener("click", async () => {
