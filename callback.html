@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Household Finance Agent — Bank connection</title>
+<style>
+body{font:16px/1.6 system-ui,-apple-system,Segoe UI,sans-serif;max-width:680px;margin:4rem auto;padding:0 1.25rem;color:#202733}
+h1{line-height:1.2}p{margin:1rem 0}.muted{color:#5c6675}
+</style>
+</head>
+<body>
+<h1>Bank connection</h1>
+<p id="status">Completing the secure hand-off to the Household Finance Agent on the computer that started this connection…</p>
+<p class="muted" id="detail">This page does not store your bank login details or account information.</p>
+<script>
+(async () => {
+  const status = document.getElementById("status");
+  const detail = document.getElementById("detail");
+  const params = new URLSearchParams(window.location.search);
+  const code = params.get("code");
+  const state = params.get("state");
+  const error = params.get("error");
+  // Remove sensitive/temporary query values from the visible address bar.
+  history.replaceState({}, document.title, window.location.pathname);
+  if (error) {
+    status.textContent = "The bank connection was not completed.";
+    detail.textContent = "The authorisation service returned an error. You can close this page and try again.";
+    return;
+  }
+  if (!code || !state) {
+    status.textContent = "No authorisation response was found.";
+    detail.textContent = "Please start the bank connection again from the Household Finance Agent on your computer.";
+    return;
+  }
+  try {
+    const response = await fetch("http://127.0.0.1:8765/callback", {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({code, state})
+    });
+    if (!response.ok) throw new Error("Local receiver rejected the response.");
+    status.textContent = "Bank authorisation response received.";
+    detail.textContent = "You can return to the Household Finance Agent window on your computer.";
+  } catch (_) {
+    status.textContent = "The local Household Finance Agent was not reachable.";
+    detail.textContent = "Keep the agent running on the same computer and start the bank connection again. No authorisation code was saved by this page.";
+  }
+})();
+</script>
+</body>
+</html>
