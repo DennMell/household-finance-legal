@@ -56,10 +56,12 @@ button:disabled{opacity:.65;cursor:wait}
         body: JSON.stringify({code, state})
       });
       if (!response.ok) {
-        status.textContent = "The local agent rejected the response.";
-        detail.textContent = "Start a new bank connection from the running Household Finance Agent.";
+        status.textContent = "The local agent rejected the response (HTTP " + response.status + ").";
+        detail.textContent = "This response cannot be retried. Start a new bank connection from the running Household Finance Agent.";
         code = null;
         state = null;
+        button.hidden = true;
+        button.disabled = false;
         return;
       }
       status.textContent = "Bank authorisation response received.";
